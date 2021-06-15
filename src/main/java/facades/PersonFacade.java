@@ -132,4 +132,17 @@ public class PersonFacade {
             em.close();
         }
     }
+
+    public PublicPersonDto getOwnerPublic(long id) {
+        return new PublicPersonDto(_getOwner(id));
+    }
+
+    public Owner _getOwner(long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Owner.class, id);
+        } finally {
+            em.close();
+        }
+    }
 }

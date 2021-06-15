@@ -2,7 +2,7 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dtos.people._public.PublicOwnerDto;
+import dtos.people._public.PublicDogDto;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -21,9 +21,10 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
-public class PeopleResourceTest {
+public class DogResourceTest {
 
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
@@ -109,46 +110,30 @@ public class PeopleResourceTest {
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
-                .get("/people/owners").then()
+                .get("/dogs").then()
                 .statusCode(200)
-                .body("", hasSize(1))
-                .body("[0]", not(hasKey("addressId")));
+                .body("", hasSize(2));
     }
-
-    @Test
-    public void getAllWalkersPublic() {
-        // Do not show address
-        login("user", "test");
-        given()
-                .contentType("application/json")
-                .header("x-access-token", securityToken)
-                .when()
-                .get("/people/walkers").then()
-                .statusCode(200)
-                .body("", hasSize(2))
-                .body("[0]", not(hasKey("addressId")));
-    }
-
 
     @Test
     public void getDogById() {
         // Do not show address
         login("user", "test");
-        PublicOwnerDto[] _temp = given()
+        PublicDogDto[] _temp = given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
-                .get("/people/owners").then()
-                .extract().as(PublicOwnerDto[].class);
-        PublicOwnerDto ownerDto = _temp[0];
+                .get("/dogs").then()
+                .extract().as(PublicDogDto[].class);
+        PublicDogDto dogDto = _temp[0];
 
         given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
-                .get("/people/owners/" + ownerDto.getId()).then()
+                .get("/dogs/" + dogDto.getId()).then()
                 .statusCode(200)
-                .body("name", equalTo(ownerDto.getName()));
+                .body("name", equalTo(dogDto.getName()));
     }
 
 }

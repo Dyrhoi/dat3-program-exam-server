@@ -8,10 +8,7 @@ import utils.EMF_Creator;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -34,6 +31,13 @@ public class PeopleResource {
     public Response getOwners() {
         List<PublicPersonDto> owners = PERSON_FACADE.getAllOwnersPublic();
         return Response.ok().entity(GSON.toJson(owners)).build();
+    }
+
+    @GET
+    @Path("/owners/{id}")
+    public Response getOwners(@PathParam("id") long id) {
+        PublicPersonDto owner = PERSON_FACADE.getOwnerPublic(id);
+        return Response.ok().entity(GSON.toJson(owner)).build();
     }
 
     @GET

@@ -115,7 +115,7 @@ public class Populate {
     public boolean populateDogs() throws IllegalArgumentException {
         DogFacade dogFacade = DogFacade.getInstance(this.emf);
 
-        if (!dogFacade.getAllDogs().isEmpty()) return false;
+        if (!dogFacade.getAllPrivate().isEmpty()) return false;
 
         PrivateDogDto privateDogDto = PrivateDogDto.builder()
                 .owner(owner)
@@ -126,7 +126,7 @@ public class Populate {
                 .breed("Labrador")
                 .gender("female")
                 .build();
-        dogFacade.createDog(privateDogDto);
+        dogFacade.create(privateDogDto);
 
         privateDogDto = PrivateDogDto.builder()
                 .owner(owner)
@@ -137,7 +137,7 @@ public class Populate {
                 .breed("Bulldog")
                 .gender("male")
                 .build();
-        dogFacade.createDog(privateDogDto);
+        dogFacade.create(privateDogDto);
         return true;
     }
 

@@ -1,6 +1,7 @@
 package facades;
 
 import dtos.people._private.PrivateDogDto;
+import dtos.people._public.PublicDogDto;
 import entities.Dog;
 import entities.Owner;
 import entities.Walker;
@@ -32,7 +33,7 @@ public class DogFacade {
         return instance;
     }
 
-    public PrivateDogDto createDog(PrivateDogDto privateDogDto) {
+    public PrivateDogDto create(PrivateDogDto privateDogDto) {
         EntityManager em = emf.createEntityManager();
         try {
             Dog dog = Dog.builder()
@@ -59,11 +60,34 @@ public class DogFacade {
         }
     }
 
-    public List<PrivateDogDto> getAllDogs() {
+    public List<PrivateDogDto> getAllPrivate() {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Dog> q = em.createQuery("SELECT w FROM Dog w", Dog.class);
             return q.getResultList().stream().map(PrivateDogDto::new).collect(Collectors.toList());
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<PublicDogDto> getAllPublic() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Dog> q = em.createQuery("SELECT w FROM Dog w", Dog.class);
+            return q.getResultList().stream().map(PublicDogDto::new).collect(Collectors.toList());
+        } finally {
+            em.close();
+        }
+    }
+
+    public PublicDogDto getPublic(long id) {
+        return new PublicDogDto(_get(id));
+    }
+
+    public Dog _get(long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Dog.class, id);
         } finally {
             em.close();
         }

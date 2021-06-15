@@ -59,7 +59,7 @@ public class AdminResource {
     @GET
     @Path("/dogs")
     public Response getDogs(String json) {
-        List<PrivateDogDto> dogs = DOG_FACADE.getAllDogs();
+        List<PrivateDogDto> dogs = DOG_FACADE.getAllPrivate();
         return Response.ok().entity(GSON.toJson(dogs)).build();
     }
 
@@ -80,7 +80,7 @@ public class AdminResource {
     @POST
     @Path("/dogs")
     public Response createDog(String json) {
-        PrivateDogDto walkerDto = DOG_FACADE.createDog(GSON.fromJson(json, PrivateDogDto.class));
+        PrivateDogDto walkerDto = DOG_FACADE.create(GSON.fromJson(json, PrivateDogDto.class));
         return Response.ok().entity(GSON.toJson(walkerDto)).build();
     }
 
