@@ -31,8 +31,6 @@ public class ApplicationConfig extends Application {
         resources.add(rest.UserResource.class);
         resources.add(rest.AdminResource.class);
         resources.add(rest.DemoResource.class);
-        resources.add(rest.RenameMeResource.class);
-        resources.add(rest.ExternalFetchResource.class);
         resources.add(security.JWTAuthenticationFilter.class);
         resources.add(AuthenticationEndpoint.class);
         resources.add(security.RolesAllowedFilter.class);
