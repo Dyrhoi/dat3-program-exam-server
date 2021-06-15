@@ -2,7 +2,9 @@ package dtos.people._private;
 
 import dtos.AddressDto;
 import dtos.external.DawaDto;
+import entities.Owner;
 import entities.Person;
+import entities.Walker;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
@@ -43,12 +45,10 @@ public class PrivatePersonDto {
     }
 
     /**
-     *
      * We do this to avoid infinite pointers: dog -> owner -> [dogs ... -> owner -> [dogs ... ] ... ]
-     *
-     * */
+     */
     @Data
-    public class PersonDogDto {
+    public static class PersonDogDto {
         private long id;
         private String name;
         private String breed;

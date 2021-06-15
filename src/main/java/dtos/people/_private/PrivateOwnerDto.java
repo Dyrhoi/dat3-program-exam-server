@@ -4,6 +4,7 @@ import dtos.external.DawaDto;
 import entities.Owner;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@ToString(callSuper = true)
 @SuperBuilder
 public class PrivateOwnerDto extends PrivatePersonDto {
     List<PrivatePersonDto.PersonDogDto> dogs;

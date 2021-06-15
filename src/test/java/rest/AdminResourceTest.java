@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dtos.people._private.PrivateDogDto;
 import dtos.people._private.PrivateOwnerDto;
+import dtos.people._private.PrivatePersonDto;
 import dtos.people._private.PrivateWalkerDto;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
@@ -21,10 +22,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Collections;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AdminResourceTest {
@@ -287,6 +288,87 @@ public class AdminResourceTest {
                 .get("/admin/dogs").then()
                 .statusCode(200)
                 .body("", hasSize(2));
+    }
+
+    @Test
+    public void updateWalker() {
+        login("admin", "test");
+        PrivateWalkerDto[] _tempWalker = given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/people/walkers").then()
+                .extract().as(PrivateWalkerDto[].class);
+        PrivateWalkerDto oldWalker = _tempWalker[0];
+
+        PrivateDogDto[] _tempDog = given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/dogs").then()
+                .extract().as(PrivateDogDto[].class);
+        PrivateDogDto dog = _tempDog[0];
+
+        PrivateWalkerDto newWalker = PrivateWalkerDto.builder()
+                .id(oldWalker.getId())
+                .name("Luke Hedwig")
+                .addressId("0a3f50c0-0db4-32b8-e044-0003ba298018")
+                .phone("+45 39393939")
+                .dogs(Collections.singletonList(new PrivatePersonDto.PersonDogDto(dog)))
+                .build();
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .body(GSON.toJson(newWalker))
+                .when().put("/admin/people/walkers")
+                .then()
+                .body("name", equalTo("Luke Hedwig"))
+                .body("addressId", equalTo("0a3f50c0-0db4-32b8-e044-0003ba298018"))
+                .body("phone", equalTo("+45 39393939"))
+                .body("dogs", hasSize(1));
+
+    }
+
+
+    @Test
+    public void updateOwner() {
+        login("admin", "test");
+        PrivateOwnerDto[] _tempOwner = given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/people/owners").then()
+                .extract().as(PrivateOwnerDto[].class);
+        PrivateOwnerDto oldOwner = _tempOwner[0];
+
+        PrivateDogDto[] _tempDog = given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/dogs").then()
+                .extract().as(PrivateDogDto[].class);
+        PrivateDogDto dog = _tempDog[0];
+
+        PrivateOwnerDto newWalker = PrivateOwnerDto.builder()
+                .id(oldOwner.getId())
+                .name("Luke Hedwig")
+                .addressId("0a3f50c0-0db4-32b8-e044-0003ba298018")
+                .phone("+45 39393939")
+                .dogs(Collections.singletonList(new PrivatePersonDto.PersonDogDto(dog)))
+                .build();
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .body(GSON.toJson(newWalker))
+                .when().put("/admin/people/owners")
+                .then()
+                .body("name", equalTo("Luke Hedwig"))
+                .body("addressId", equalTo("0a3f50c0-0db4-32b8-e044-0003ba298018"))
+                .body("phone", equalTo("+45 39393939"))
+                .body("dogs", hasSize(1));
+
     }
 
 }

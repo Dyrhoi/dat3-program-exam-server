@@ -84,4 +84,18 @@ public class AdminResource {
         return Response.ok().entity(GSON.toJson(walkerDto)).build();
     }
 
+    @PUT
+    @Path("/people/owners")
+    public Response updateOwner(String json) {
+        PrivatePersonDto ownerDto = PERSON_FACADE.updatePerson(GSON.fromJson(json, PrivateOwnerDto.class));
+        return Response.ok().entity(GSON.toJson(ownerDto)).build();
+    }
+
+    @PUT
+    @Path("/people/walkers")
+    public Response updateWalker(String json) {
+        PrivatePersonDto walkerDto = PERSON_FACADE.updatePerson(GSON.fromJson(json, PrivateWalkerDto.class));
+        return Response.ok().entity(GSON.toJson(walkerDto)).build();
+    }
+
 }

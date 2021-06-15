@@ -131,7 +131,7 @@ public class PeopleResourceTest {
 
 
     @Test
-    public void getDogById() {
+    public void getOwnerById() {
         // Do not show address
         login("user", "test");
         PublicOwnerDto[] _temp = given()
@@ -148,7 +148,8 @@ public class PeopleResourceTest {
                 .when()
                 .get("/people/owners/" + ownerDto.getId()).then()
                 .statusCode(200)
-                .body("name", equalTo(ownerDto.getName()));
+                .body("name", equalTo(ownerDto.getName()))
+                .body("dogs", hasSize(2));
     }
 
 }

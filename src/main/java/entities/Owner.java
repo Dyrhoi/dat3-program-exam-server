@@ -3,6 +3,7 @@ package entities;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.CascadeType;
@@ -10,10 +11,12 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@ToString(callSuper = true)
 @NoArgsConstructor
 @SuperBuilder
 @Entity
@@ -34,5 +37,13 @@ public class Owner extends Person implements Serializable {
 
     public void addDog(Dog dog) {
         dogs.add(dog);
+    }
+
+    public void removeAllDogs() {
+        // Avoiding concurrent exception...
+        for (Iterator<Dog> iterator = this.getDogs().iterator(); iterator.hasNext();) {
+            iterator.next();
+            iterator.remove();
+        }
     }
 }

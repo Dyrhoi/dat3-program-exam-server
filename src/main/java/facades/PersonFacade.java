@@ -1,5 +1,6 @@
 package facades;
 
+import com.mysql.cj.util.StringUtils;
 import dtos.people._private.PrivateOwnerDto;
 import dtos.people._private.PrivatePersonDto;
 import dtos.people._private.PrivateWalkerDto;
@@ -8,6 +9,7 @@ import dtos.people._public.PublicPersonDto;
 import dtos.people._public.PublicWalkerDto;
 import entities.Dog;
 import entities.Owner;
+import entities.Person;
 import entities.Walker;
 
 import javax.persistence.EntityManager;
@@ -135,16 +137,77 @@ public class PersonFacade {
     }
 
     public PublicPersonDto getOwnerPublic(long id) {
-        return new PublicOwnerDto(_getOwner(id));
+        return new PublicOwnerDto((Owner) _get(id));
     }
 
-    public Owner _getOwner(long id) {
+    public PrivatePersonDto updatePerson(PrivatePersonDto updatedPerson) {
+        // Only replace posted fields.
+
         EntityManager em = emf.createEntityManager();
         try {
-            Owner owner = em.find(Owner.class, id);
-            if (owner == null)
+            Person person = _get(updatedPerson.getId());
+
+            // Update "Person class"
+
+            if (!StringUtils.isNullOrEmpty(updatedPerson.getName())) {
+                person.setName(updatedPerson.getName());
+            }
+            if (!StringUtils.isNullOrEmpty(updatedPerson.getAddressId())) {
+                person.setDawaAddressId(updatedPerson.getAddressId());
+            }
+            if (!StringUtils.isNullOrEmpty(updatedPerson.getPhone())) {
+                person.setPhoneNumber(updatedPerson.getPhone());
+            }
+
+            // Figure out instance
+            // We have different fields on each Person Type we would update.
+            if (person instanceof Owner) {
+                Owner owner = (Owner) person;
+                // We now expect the updated user to be a PrivateOwnerDto
+                PrivateOwnerDto po = (PrivateOwnerDto) updatedPerson;
+                if (po.getDogs() != null && !po.getDogs().isEmpty()) {
+                    // Clear all dogs, as we expect the complete array.
+                    owner.removeAllDogs();
+                    owner.setDogs(po.getDogs().stream().map(dogDto -> em.find(Dog.class, dogDto.getId())).collect(Collectors.toList()));
+                }
+
+                person = owner;
+            }
+            if (person instanceof Walker) {
+                Walker walker = (Walker) person;
+                // We now expect the updated user to be a PrivateOwnerDto
+                PrivateWalkerDto pw = (PrivateWalkerDto) updatedPerson;
+                if (pw.getDogs() != null && !pw.getDogs().isEmpty()) {
+                    // Clear all dogs, as we expect the complete array.
+                    walker.removeAllDogs();
+                    walker.setDogs(pw.getDogs().stream().map(dogDto -> em.find(Dog.class, dogDto.getId())).collect(Collectors.toList()));
+                }
+
+                person = walker;
+            }
+
+            em.getTransaction().begin();
+            em.merge(person);
+            em.getTransaction().commit();
+
+            if (person instanceof Owner) {
+                return new PrivateOwnerDto((Owner) _get(person.getId()), DawaFacade.getDawaByAddressId(person.getDawaAddressId()));
+            } else if (person instanceof Walker) {
+                return new PrivateWalkerDto((Walker) _get(person.getId()), DawaFacade.getDawaByAddressId(person.getDawaAddressId()));
+            }
+            throw new WebApplicationException("error occured updating user.", 500);
+        } finally {
+            em.close();
+        }
+    }
+
+    public Person _get(long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Person person = em.find(Person.class, id);
+            if (person == null)
                 throw new WebApplicationException("No user found with this id (" + id + ").", 404);
-            return owner;
+            return person;
         } finally {
             em.close();
         }

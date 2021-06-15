@@ -103,7 +103,7 @@ public class DogResourceTest {
     }
 
     @Test
-    public void getAllOwnersPublic() {
+    public void getAllDogsPublic() {
         // Do not show address
         login("user", "test");
         given()
