@@ -369,6 +369,13 @@ public class AdminResourceTest {
                 .body("phone", equalTo("+45 39393939"))
                 .body("dogs", hasSize(1));
 
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when().get("/dogs")
+                .then()
+                .body("", hasSize(1));
+
     }
 
 }

@@ -32,7 +32,7 @@ public class Dog implements Serializable {
     private GenderTypes gender;
     private Date birthdate;
 
-    @ManyToMany(mappedBy = "dogs", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "dogs", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<Walker> walkers = new ArrayList<>();
 
     @ManyToOne
