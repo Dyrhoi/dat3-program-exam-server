@@ -46,10 +46,9 @@ public class DogFacade {
 
             // Ensure Bidirectional update.
             if (dogDto.getWalkers() != null)
-                dogDto.getWalkers().forEach(walker -> {
-                    System.out.println(walker);
-                    dog.addWalker(em.find(Walker.class, walker.getId()));
-                });
+                dogDto.getWalkers().forEach(walker ->
+                        dog.addWalker(em.find(Walker.class, walker.getId()))
+                );
 
             em.getTransaction().begin();
             em.persist(dog);

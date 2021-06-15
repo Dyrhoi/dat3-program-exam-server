@@ -2,10 +2,12 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dtos.DogDto;
 import dtos.OwnerDto;
 import dtos.PersonDto;
 import dtos.WalkerDto;
 import dtos.user.PrivateUserDto;
+import facades.DogFacade;
 import facades.PersonFacade;
 import facades.UserFacade;
 import utils.EMF_Creator;
@@ -28,8 +30,10 @@ public class AdminResource {
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     private static final UserFacade USER_FACADE = UserFacade.getInstance(EMF);
     private static final PersonFacade PERSON_FACADE = PersonFacade.getInstance(EMF);
+    private static final DogFacade DOG_FACADE = DogFacade.getInstance(EMF);
 
-    public AdminResource() {}
+    public AdminResource() {
+    }
 
     @GET
     @Path("/users")
@@ -52,6 +56,13 @@ public class AdminResource {
         return Response.ok().entity(GSON.toJson(people)).build();
     }
 
+    @GET
+    @Path("/dogs")
+    public Response getDogs(String json) {
+        List<DogDto> dogs = DOG_FACADE.getAllDogs();
+        return Response.ok().entity(GSON.toJson(dogs)).build();
+    }
+
     @POST
     @Path("/people/owners")
     public Response createOwner(String json) {
@@ -63,6 +74,13 @@ public class AdminResource {
     @Path("/people/walkers")
     public Response createWalker(String json) {
         PersonDto walkerDto = PERSON_FACADE.createWalker(GSON.fromJson(json, WalkerDto.class));
+        return Response.ok().entity(GSON.toJson(walkerDto)).build();
+    }
+
+    @POST
+    @Path("/dogs")
+    public Response createDog(String json) {
+        DogDto walkerDto = DOG_FACADE.createDog(GSON.fromJson(json, DogDto.class));
         return Response.ok().entity(GSON.toJson(walkerDto)).build();
     }
 

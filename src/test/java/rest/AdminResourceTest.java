@@ -1,11 +1,11 @@
 package rest;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import dtos.DogDto;
 import dtos.OwnerDto;
-import dtos.PersonDto;
-import dtos.user.PrivateUserDto;
+import dtos.WalkerDto;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -21,21 +21,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.Arrays;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 public class AdminResourceTest {
 
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
     private static EntityManagerFactory emf;
-    
+
     static HttpServer startServer() {
         ResourceConfig rc = ResourceConfig.forApplication(new ApplicationConfig());
         return GrizzlyHttpServerFactory.createHttpServer(BASE_URI, rc);
@@ -58,7 +57,7 @@ public class AdminResourceTest {
     public static void closeTestServer() {
         //Don't forget this, if you called its counterpart in @BeforeAll
         EMF_Creator.endREST_TestWithDB();
-        
+
         httpServer.shutdownNow();
     }
 
@@ -69,12 +68,15 @@ public class AdminResourceTest {
         try {
             em.getTransaction().begin();
             //Delete existing users and roles to get a "fresh" database
+            em.createQuery("delete from Dog").executeUpdate();
+            em.createQuery("delete from Owner").executeUpdate();
+            em.createQuery("delete from Walker").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
             //System.out.println("Saved test data to database");
             em.getTransaction().commit();
 
-            new Populate(EMF_Creator.createEntityManagerFactoryForTest()).populateUsers();
+            new Populate(EMF_Creator.createEntityManagerFactoryForTest()).populateAll();
         } finally {
             em.close();
         }
@@ -134,15 +136,126 @@ public class AdminResourceTest {
     public void createOwner() {
         login("admin", "test");
         OwnerDto ownerDto = OwnerDto.builder()
-                .name("Martin Eriksen")
-                .phone("+45 20202020")
-                .addressId("000021c5-e9ee-411d-b2d8-ec9161780ccd")
+                .name("Ole Tuborg")
+                .addressId("0a3f50a0-37af-32b8-e044-0003ba298018")
+                .phone("+45 12345678")
                 .build();
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .body(GSON.toJson(ownerDto))
+                //.when().post("/api/login")
+                .when().post("/admin/people/owners");
         given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
-                .get("/admin/users").then()
+                .get("/admin/people/owners").then()
+                .statusCode(200)
+                .body("", hasSize(2));
+    }
+
+
+    @Test
+    public void getAllOwners() {
+        login("admin", "test");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/people/owners").then()
+                .statusCode(200)
+                .body("", hasSize(1));
+    }
+
+    @Test
+    public void createWalker() {
+        login("admin", "test");
+        WalkerDto walkerDto = WalkerDto.builder()
+                .name("Ole Tuborg")
+                .addressId("0a3f50a0-37af-32b8-e044-0003ba298018")
+                .phone("+45 12345678")
+                .build();
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .body(GSON.toJson(walkerDto))
+                //.when().post("/api/login")
+                .when().post("/admin/people/walkers");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/people/walkers").then()
+                .statusCode(200)
+                .body("", hasSize(3));
+    }
+
+
+    @Test
+    public void getAllWalkers() {
+        login("admin", "test");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/people/walkers").then()
+                .statusCode(200)
+                .body("", hasSize(2));
+    }
+
+    @Test
+    public void createDog() {
+        login("admin", "test");
+
+        // A dog is required an already established Owner entity.
+        // A dog can have walkers by default, but not required.
+        OwnerDto[] _temp = given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/people/owners").then()
+                .extract().as(OwnerDto[].class);
+        OwnerDto ownerDto = _temp[0];
+
+        DogDto dogDto = DogDto.builder()
+                .owner(ownerDto)
+                .name("Fjeffi")
+                .birthdate(1529057111)
+                .imageUrl("https://i.imgur.com/xyPtn4m.jpg")
+                .breed("Labrador")
+                .gender("female")
+                .build();
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .body(GSON.toJson(dogDto))
+                //.when().post("/api/login")
+                .when().post("/admin/dogs");
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/dogs").then()
+                .statusCode(200)
+                .body("", hasSize(3));
+
+
+    }
+
+
+    @Test
+    public void getAllDogs() {
+        login("admin", "test");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/dogs").then()
                 .statusCode(200)
                 .body("", hasSize(2));
     }
