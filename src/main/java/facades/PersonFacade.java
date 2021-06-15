@@ -135,7 +135,7 @@ public class PersonFacade {
     }
 
     public PublicPersonDto getOwnerPublic(long id) {
-        return new PublicPersonDto(_getOwner(id));
+        return new PublicOwnerDto(_getOwner(id));
     }
 
     public Owner _getOwner(long id) {
