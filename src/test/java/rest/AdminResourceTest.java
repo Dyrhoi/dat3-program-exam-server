@@ -22,9 +22,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -375,6 +379,16 @@ public class AdminResourceTest {
                 .when().get("/dogs")
                 .then()
                 .body("", hasSize(1));
+
+        // Spend way too long on this...
+        List<PrivateWalkerDto> walkers = new ArrayList<>(Arrays.asList(given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when().get("/admin/people/walkers")
+                .then()
+                .extract().as(PrivateWalkerDto[].class)));
+
+        assertThat(walkers, everyItem(hasProperty("dogs", hasSize(lessThan(2)))));
 
     }
 

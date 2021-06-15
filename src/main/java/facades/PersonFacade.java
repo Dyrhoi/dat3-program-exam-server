@@ -161,14 +161,18 @@ public class PersonFacade {
 
             // Figure out instance
             // We have different fields on each Person Type we would update.
+            List<Dog> dogsToRemove = new ArrayList<>();
             if (person instanceof Owner) {
                 Owner owner = (Owner) person;
                 // We now expect the updated user to be a PrivateOwnerDto
+
                 PrivateOwnerDto po = (PrivateOwnerDto) updatedPerson;
                 if (po.getDogs() != null && !po.getDogs().isEmpty()) {
-                    // Clear all dogs, as we expect the complete array.
-                    owner.removeAllDogs();
-                    owner.setDogs(po.getDogs().stream().map(dogDto -> em.find(Dog.class, dogDto.getId())).collect(Collectors.toList()));
+                    List<Dog> newDogs = po.getDogs().stream().map(dogDto -> em.find(Dog.class, dogDto.getId())).collect(Collectors.toList());
+                    dogsToRemove = new ArrayList<>(owner.getDogs());
+                    dogsToRemove.removeAll(newDogs);
+
+                    owner.setDogs(newDogs);
                 }
 
                 person = owner;
@@ -178,15 +182,24 @@ public class PersonFacade {
                 // We now expect the updated user to be a PrivateOwnerDto
                 PrivateWalkerDto pw = (PrivateWalkerDto) updatedPerson;
                 if (pw.getDogs() != null && !pw.getDogs().isEmpty()) {
-                    // Clear all dogs, as we expect the complete array.
-                    walker.removeAllDogs();
-                    walker.setDogs(pw.getDogs().stream().map(dogDto -> em.find(Dog.class, dogDto.getId())).collect(Collectors.toList()));
+                    List<Dog> newDogs = pw.getDogs().stream().map(dogDto -> em.find(Dog.class, dogDto.getId())).collect(Collectors.toList());
+                    dogsToRemove = new ArrayList<>(walker.getDogs());
+                    dogsToRemove.removeAll(newDogs);
+
+                    walker.setDogs(newDogs);
                 }
 
                 person = walker;
             }
 
             em.getTransaction().begin();
+            // Make the managed by entity manager and delete the dogs. ENSURE BIDRECTIONAL
+            // Also this is a fucking mess... Please don't let me touch JPA with a ten foot stick again...
+            // Spring boot please, or let me use graphql with typescript.
+            dogsToRemove.stream().map(dog -> em.find(Dog.class, dog.getId())).forEach(dog -> {
+                dog.removeAllWalkers();
+                em.remove(dog);
+            });
             em.merge(person);
             em.getTransaction().commit();
 

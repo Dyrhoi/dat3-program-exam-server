@@ -7,10 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -33,7 +30,7 @@ public class Dog implements Serializable {
     private GenderTypes gender;
     private Date birthdate;
 
-    @ManyToMany(mappedBy = "dogs", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @ManyToMany(mappedBy = "dogs", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Walker> walkers = new ArrayList<>();
 
     @ManyToOne
@@ -85,5 +82,18 @@ public class Dog implements Serializable {
             newOwner.addDog(this);
         }
         this.owner = newOwner;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Dog dog = (Dog) o;
+        return id.equals(dog.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
