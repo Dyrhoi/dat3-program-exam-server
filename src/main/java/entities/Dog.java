@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @Data
@@ -65,6 +66,15 @@ public class Dog implements Serializable {
     public void removeWalker(Walker walker) {
         walkers.remove(walker);
         walker.getDogs().remove(this);
+    }
+
+    public void removeAllWalkers() {
+        // Avoiding concurrent exception...
+        for (Iterator<Walker> iterator = this.getWalkers().iterator(); iterator.hasNext(); ) {
+            Walker walker = iterator.next();
+            walker.getDogs().remove(this);
+            iterator.remove();
+        }
     }
 
     public void setOwner(Owner newOwner) {

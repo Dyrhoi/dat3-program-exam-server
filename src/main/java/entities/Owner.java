@@ -42,7 +42,8 @@ public class Owner extends Person implements Serializable {
     public void removeAllDogs() {
         // Avoiding concurrent exception...
         for (Iterator<Dog> iterator = this.getDogs().iterator(); iterator.hasNext();) {
-            iterator.next();
+            Dog dog = iterator.next();
+            dog.removeAllWalkers();
             iterator.remove();
         }
     }
