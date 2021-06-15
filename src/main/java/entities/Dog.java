@@ -24,7 +24,7 @@ public class Dog implements Serializable  {
 
     private String name;
     private String breed;
-    private String image;
+    private String imageUrl;
     private GenderTypes gender;
     private Date birthdate;
 
