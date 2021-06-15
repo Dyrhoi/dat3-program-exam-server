@@ -13,6 +13,7 @@ import entities.Walker;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.WebApplicationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -140,7 +141,10 @@ public class PersonFacade {
     public Owner _getOwner(long id) {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.find(Owner.class, id);
+            Owner owner = em.find(Owner.class, id);
+            if (owner == null)
+                throw new WebApplicationException("No user found with this id (" + id + ").", 404);
+            return owner;
         } finally {
             em.close();
         }

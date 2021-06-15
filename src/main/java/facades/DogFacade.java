@@ -9,6 +9,7 @@ import entities.Walker;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.WebApplicationException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,7 +88,10 @@ public class DogFacade {
     public Dog _get(long id) {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.find(Dog.class, id);
+            Dog dog = em.find(Dog.class, id);
+            if (dog == null)
+                throw new WebApplicationException("No dog found with this id (" + id + ").", 404);
+            return dog;
         } finally {
             em.close();
         }
