@@ -32,10 +32,10 @@ public class Dog implements Serializable {
     private GenderTypes gender;
     private Date birthdate;
 
-    @ManyToMany(mappedBy = "dogs", cascade = CascadeType.PERSIST)
+    @ManyToMany(mappedBy = "dogs", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Walker> walkers = new ArrayList<>();
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private Owner owner;
 
     @PrePersist
@@ -65,5 +65,15 @@ public class Dog implements Serializable {
     public void removeWalker(Walker walker) {
         walkers.remove(walker);
         walker.getDogs().remove(this);
+    }
+
+    public void setOwner(Owner newOwner) {
+        if (newOwner == null) {
+            if (this.owner != null)
+                this.owner.removeDog(this);
+        } else {
+            newOwner.addDog(this);
+        }
+        this.owner = newOwner;
     }
 }

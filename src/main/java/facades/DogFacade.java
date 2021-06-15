@@ -41,7 +41,6 @@ public class DogFacade {
                     .imageUrl(dogDto.getImageUrl())
                     .gender(Dog.GenderTypes.valueOf(dogDto.getGender().toUpperCase()))
                     .birthdate(new Date(dogDto.getBirthdate()))
-                    .owner(em.find(Owner.class, dogDto.getOwner().getId()))
                     .build();
 
             // Ensure Bidirectional update.
@@ -49,7 +48,7 @@ public class DogFacade {
                 dogDto.getWalkers().forEach(walker ->
                         dog.addWalker(em.find(Walker.class, walker.getId()))
                 );
-
+            dog.setOwner(em.find(Owner.class, dogDto.getOwner().getId()));
             em.getTransaction().begin();
             em.persist(dog);
             em.getTransaction().commit();

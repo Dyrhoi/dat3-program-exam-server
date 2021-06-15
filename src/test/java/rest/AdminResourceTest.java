@@ -24,6 +24,7 @@ import java.net.URI;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AdminResourceTest {
 
@@ -68,9 +69,9 @@ public class AdminResourceTest {
         try {
             em.getTransaction().begin();
             //Delete existing users and roles to get a "fresh" database
+            em.createQuery("delete from Walker").executeUpdate();
             em.createQuery("delete from Dog").executeUpdate();
             em.createQuery("delete from Owner").executeUpdate();
-            em.createQuery("delete from Walker").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
             //System.out.println("Saved test data to database");
@@ -167,6 +168,32 @@ public class AdminResourceTest {
                 .get("/admin/people/owners").then()
                 .statusCode(200)
                 .body("", hasSize(1));
+    }
+
+    @Test
+    public void expectOwnerToHaveAtLeastOneDog() {
+        login("admin", "test");
+        OwnerDto[] _temp = given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/people/owners").then()
+                .extract().as(OwnerDto[].class);
+        OwnerDto ownerDto = _temp[0];
+        assertTrue(ownerDto.getDogs().size() > 0);
+    }
+
+    @Test
+    public void expectWalkerToHaveMoreAtLeastOneDog() {
+        login("admin", "test");
+        WalkerDto[] _temp = given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/people/walkers").then()
+                .extract().as(WalkerDto[].class);
+        WalkerDto walkerDto = _temp[0];
+        assertTrue(walkerDto.getDogs().size() > 0);
     }
 
     @Test

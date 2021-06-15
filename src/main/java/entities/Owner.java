@@ -5,7 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +21,18 @@ public class Owner extends Person implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "walker_dogs",
-            joinColumns = {@JoinColumn(name = "fk_walker_id")},
-            inverseJoinColumns = {@JoinColumn(name = "fk_dog_id")})
+    @OneToMany(
+            mappedBy = "owner",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Dog> dogs = new ArrayList<>();
+
+    public void removeDog(Dog dog) {
+        dogs.remove(dog);
+    }
+
+    public void addDog(Dog dog) {
+        dogs.add(dog);
+    }
 }
