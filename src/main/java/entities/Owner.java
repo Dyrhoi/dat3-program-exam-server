@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -22,5 +23,5 @@ public class Owner extends Person implements Serializable {
     @JoinTable(name = "walker_dogs",
             joinColumns = {@JoinColumn(name = "fk_walker_id")},
             inverseJoinColumns = {@JoinColumn(name = "fk_dog_id")})
-    private List<Dog> dogs;
+    private List<Dog> dogs = new ArrayList<>();
 }

@@ -1,7 +1,6 @@
 package rest;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import utils.EMF_Creator;
-import utils.Populate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -20,7 +18,7 @@ import java.net.URI;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 
 public class UtilityResourceTest {
 
@@ -64,6 +62,9 @@ public class UtilityResourceTest {
         try {
             em.getTransaction().begin();
             //Delete existing database data.
+            em.createQuery("delete from Dog").executeUpdate();
+            em.createQuery("delete from Owner").executeUpdate();
+            em.createQuery("delete from Walker").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
 
@@ -81,7 +82,7 @@ public class UtilityResourceTest {
                 .when()
                 .get("/util/populate").then()
                 .statusCode(200)
-                .body("populated", contains("users"));
+                .body("populated", hasItem("users"));
     }
 
 

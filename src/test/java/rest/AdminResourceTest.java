@@ -1,6 +1,8 @@
 package rest;
 
 import com.google.gson.Gson;
+import dtos.OwnerDto;
+import dtos.PersonDto;
 import dtos.user.PrivateUserDto;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -19,6 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Arrays;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -118,6 +121,23 @@ public class AdminResourceTest {
     @Test
     public void users() {
         login("admin", "test");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/users").then()
+                .statusCode(200)
+                .body("", hasSize(2));
+    }
+
+    @Test
+    public void createOwner() {
+        login("admin", "test");
+        OwnerDto ownerDto = OwnerDto.builder()
+                .name("Martin Eriksen")
+                .phone("+45 20202020")
+                .addressId("000021c5-e9ee-411d-b2d8-ec9161780ccd")
+                .build();
         given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)

@@ -1,5 +1,7 @@
 package entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +13,10 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @Entity
-public class Dog implements Serializable  {
+public class Dog implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,10 +32,10 @@ public class Dog implements Serializable  {
     private GenderTypes gender;
     private Date birthdate;
 
-    @ManyToMany(mappedBy = "dogs")
-    private List<Walker> walkers;
+    @ManyToMany(mappedBy = "dogs", cascade = CascadeType.PERSIST)
+    private List<Walker> walkers = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Owner owner;
 
     @PrePersist
@@ -49,5 +53,17 @@ public class Dog implements Serializable  {
         MALE,
         FEMALE,
         OTHER
+    }
+
+    public void addWalker(Walker walker) {
+        if (walkers == null)
+            walkers = new ArrayList<>();
+        walkers.add(walker);
+        walker.getDogs().add(this);
+    }
+
+    public void removeWalker(Walker walker) {
+        walkers.remove(walker);
+        walker.getDogs().remove(this);
     }
 }
