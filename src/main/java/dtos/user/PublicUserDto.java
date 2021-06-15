@@ -1,6 +1,6 @@
 package dtos.user;
 
-import entities.User;
+import entities.user.User;
 import lombok.Data;
 
 import java.util.List;

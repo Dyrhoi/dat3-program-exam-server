@@ -1,7 +1,6 @@
 package dtos.user;
 
-import entities.Role;
-import entities.User;
+import entities.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

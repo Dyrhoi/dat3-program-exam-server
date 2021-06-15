@@ -1,6 +1,6 @@
 package security;
 
-import entities.User;
+import entities.user.User;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;

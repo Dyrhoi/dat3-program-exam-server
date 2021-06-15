@@ -1,11 +1,10 @@
-package entities;
+package entities.user;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.*;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;

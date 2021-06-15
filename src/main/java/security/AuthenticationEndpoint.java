@@ -16,8 +16,6 @@ import facades.UserFacade;
 import java.util.Date;
 import java.util.List;
 
-import entities.User;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

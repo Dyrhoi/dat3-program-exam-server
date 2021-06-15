@@ -1,7 +1,6 @@
 package rest;
 
-import com.google.gson.Gson;
-import entities.User;
+import entities.user.User;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
@@ -43,7 +42,7 @@ public class DemoResource {
 
         EntityManager em = EMF.createEntityManager();
         try {
-            TypedQuery<User> query = em.createQuery ("select u from User u",entities.User.class);
+            TypedQuery<User> query = em.createQuery ("select u from User u", User.class);
             List<User> users = query.getResultList();
             return "[" + users.size() + "]";
         } finally {

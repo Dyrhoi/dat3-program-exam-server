@@ -1,4 +1,4 @@
-package entities;
+package entities.user;
 
 import com.google.common.collect.ImmutableList;
 import lombok.Data;

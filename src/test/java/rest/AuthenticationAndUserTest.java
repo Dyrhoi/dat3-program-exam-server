@@ -2,8 +2,6 @@ package rest;
 
 import com.google.gson.Gson;
 import dtos.user.PrivateUserDto;
-import entities.User;
-import entities.Role;
 
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
@@ -22,7 +20,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import utils.EMF_Creator;
 import utils.Populate;
