@@ -10,6 +10,7 @@ import java.util.Date;
 
 @Data
 @NoArgsConstructor
+@SuperBuilder
 @Entity
 public class Person implements Serializable {
 

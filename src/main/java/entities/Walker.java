@@ -13,6 +13,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
+@SuperBuilder
 @Entity
 public class Walker extends Person implements Serializable {
 

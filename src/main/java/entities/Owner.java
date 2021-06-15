@@ -12,6 +12,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
+@SuperBuilder
 @Entity
 public class Owner extends Person implements Serializable {
 

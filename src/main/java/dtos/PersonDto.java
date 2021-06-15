@@ -14,12 +14,16 @@ import java.util.stream.Collectors;
 @SuperBuilder
 @AllArgsConstructor
 public class PersonDto {
+    private long id;
     private String name;
     private String phone;
+    private String addressId;
     private AddressDto address;
 
     public PersonDto(Person person) {
+        this.id = person.getId();
         this.name = person.getName();
+        this.addressId = person.getDawaAddressId();
         this.phone = person.getPhoneNumber();
         this.address = new AddressDto();
     }
@@ -46,7 +50,9 @@ public class PersonDto {
      * We do this to avoid infinite pointers: dog -> owner -> [dogs ... -> owner -> [dogs ... ] ... ]
      *
      * */
-    protected class PersonDogDto {
+    @Data
+    public class PersonDogDto {
+        private long id;
         private String name;
         private String breed;
         private String imageUrl;
@@ -54,6 +60,7 @@ public class PersonDto {
         private long birthdate;
 
         public PersonDogDto(DogDto dogDto) {
+            this.id = dogDto.getId();
             this.name = dogDto.getName();
             this.breed = dogDto.getBreed();
             this.gender = dogDto.getGender();

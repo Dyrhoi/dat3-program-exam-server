@@ -1,5 +1,6 @@
 package dtos;
 
+import dtos.external.DawaDto;
 import entities.Owner;
 import entities.Walker;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,11 @@ public class OwnerDto extends PersonDto {
 
     public OwnerDto(Owner owner) {
         super(owner);
+        this.dogs = owner.getDogs().stream().map(DogDto::new).map(PersonDto.PersonDogDto::new).collect(Collectors.toList());
+    }
+
+    public OwnerDto(Owner owner, DawaDto dawa) {
+        super(owner, dawa);
         this.dogs = owner.getDogs().stream().map(DogDto::new).map(PersonDto.PersonDogDto::new).collect(Collectors.toList());
     }
 }
