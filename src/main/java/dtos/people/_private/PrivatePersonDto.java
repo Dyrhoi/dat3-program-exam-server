@@ -1,26 +1,23 @@
-package dtos;
+package dtos.people._private;
 
+import dtos.AddressDto;
 import dtos.external.DawaDto;
-import entities.Owner;
 import entities.Person;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Data
 @SuperBuilder
 @AllArgsConstructor
-public class PersonDto {
+public class PrivatePersonDto {
     private long id;
     private String name;
     private String phone;
     private String addressId;
     private AddressDto address;
 
-    public PersonDto(Person person) {
+    public PrivatePersonDto(Person person) {
         this.id = person.getId();
         this.name = person.getName();
         this.addressId = person.getDawaAddressId();
@@ -28,7 +25,7 @@ public class PersonDto {
         this.address = new AddressDto();
     }
 
-    public PersonDto(Person person, DawaDto dawa) {
+    public PrivatePersonDto(Person person, DawaDto dawa) {
         this(person);
 
         // Is this super scuffed..?
@@ -59,13 +56,13 @@ public class PersonDto {
         private String gender;
         private long birthdate;
 
-        public PersonDogDto(DogDto dogDto) {
-            this.id = dogDto.getId();
-            this.name = dogDto.getName();
-            this.breed = dogDto.getBreed();
-            this.gender = dogDto.getGender();
-            this.imageUrl = dogDto.getImageUrl();
-            this.birthdate = dogDto.getBirthdate();
+        public PersonDogDto(PrivateDogDto privateDogDto) {
+            this.id = privateDogDto.getId();
+            this.name = privateDogDto.getName();
+            this.breed = privateDogDto.getBreed();
+            this.gender = privateDogDto.getGender();
+            this.imageUrl = privateDogDto.getImageUrl();
+            this.birthdate = privateDogDto.getBirthdate();
         }
     }
 }

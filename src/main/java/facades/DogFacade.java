@@ -1,6 +1,6 @@
 package facades;
 
-import dtos.DogDto;
+import dtos.people._private.PrivateDogDto;
 import entities.Dog;
 import entities.Owner;
 import entities.Walker;
@@ -32,38 +32,38 @@ public class DogFacade {
         return instance;
     }
 
-    public DogDto createDog(DogDto dogDto) {
+    public PrivateDogDto createDog(PrivateDogDto privateDogDto) {
         EntityManager em = emf.createEntityManager();
         try {
             Dog dog = Dog.builder()
-                    .name(dogDto.getName())
-                    .breed(dogDto.getBreed())
-                    .imageUrl(dogDto.getImageUrl())
-                    .gender(Dog.GenderTypes.valueOf(dogDto.getGender().toUpperCase()))
-                    .birthdate(new Date(dogDto.getBirthdate()))
+                    .name(privateDogDto.getName())
+                    .breed(privateDogDto.getBreed())
+                    .imageUrl(privateDogDto.getImageUrl())
+                    .gender(Dog.GenderTypes.valueOf(privateDogDto.getGender().toUpperCase()))
+                    .birthdate(new Date(privateDogDto.getBirthdate()))
                     .build();
 
             // Ensure Bidirectional update.
-            if (dogDto.getWalkers() != null)
-                dogDto.getWalkers().forEach(walker ->
+            if (privateDogDto.getWalkers() != null)
+                privateDogDto.getWalkers().forEach(walker ->
                         dog.addWalker(em.find(Walker.class, walker.getId()))
                 );
-            dog.setOwner(em.find(Owner.class, dogDto.getOwner().getId()));
+            dog.setOwner(em.find(Owner.class, privateDogDto.getOwner().getId()));
             em.getTransaction().begin();
             em.persist(dog);
             em.getTransaction().commit();
 
-            return new DogDto(dog);
+            return new PrivateDogDto(dog);
         } finally {
             em.close();
         }
     }
 
-    public List<DogDto> getAllDogs() {
+    public List<PrivateDogDto> getAllDogs() {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Dog> q = em.createQuery("SELECT w FROM Dog w", Dog.class);
-            return q.getResultList().stream().map(DogDto::new).collect(Collectors.toList());
+            return q.getResultList().stream().map(PrivateDogDto::new).collect(Collectors.toList());
         } finally {
             em.close();
         }

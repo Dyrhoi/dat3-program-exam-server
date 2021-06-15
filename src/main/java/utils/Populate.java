@@ -2,10 +2,10 @@ package utils;
 
 
 import com.google.common.base.Strings;
-import dtos.DogDto;
-import dtos.OwnerDto;
-import dtos.PersonDto;
-import dtos.WalkerDto;
+import dtos.people._private.PrivateDogDto;
+import dtos.people._private.PrivateOwnerDto;
+import dtos.people._private.PrivatePersonDto;
+import dtos.people._private.PrivateWalkerDto;
 import facades.DogFacade;
 import facades.PersonFacade;
 import facades.UserFacade;
@@ -18,9 +18,9 @@ import java.util.List;
 
 public class Populate {
     private final EntityManagerFactory emf;
-    private static PersonDto owner = null;
-    private static PersonDto walker1 = null;
-    private static PersonDto walker2 = null;
+    private static PrivatePersonDto owner = null;
+    private static PrivatePersonDto walker1 = null;
+    private static PrivatePersonDto walker2 = null;
 
 
     public static void main(String[] args) {
@@ -79,7 +79,7 @@ public class Populate {
 
         if (personFacade.getAllWalkersPrivate().isEmpty()) {
             walker1 = personFacade.createWalker(
-                    WalkerDto.builder()
+                    PrivateWalkerDto.builder()
                             .name("John Eriksen")
                             .addressId("000021c5-e9ee-411d-b2d8-ec9161780ccd")
                             .phone("+45 23232323")
@@ -88,7 +88,7 @@ public class Populate {
             );
 
             walker2 = personFacade.createWalker(
-                    WalkerDto.builder()
+                    PrivateWalkerDto.builder()
                             .name("Martin Svensen")
                             .addressId("d0def69f-e4b4-4eb1-a4df-fe36656fee58")
                             .phone("+45 10102323")
@@ -100,7 +100,7 @@ public class Populate {
         }
         if (personFacade.getAllOwnersPrivate().isEmpty()) {
             owner = personFacade.createOwner(
-                    OwnerDto.builder()
+                    PrivateOwnerDto.builder()
                             .name("Ludwig Charles")
                             .addressId("0a3f50a0-37ad-32b8-e044-0003ba298018")
                             .phone("+45 20592020")
@@ -117,7 +117,7 @@ public class Populate {
 
         if (!dogFacade.getAllDogs().isEmpty()) return false;
 
-        DogDto dogDto = DogDto.builder()
+        PrivateDogDto privateDogDto = PrivateDogDto.builder()
                 .owner(owner)
                 .walkers(Arrays.asList(walker1, walker2))
                 .name("Fjeffi")
@@ -126,9 +126,9 @@ public class Populate {
                 .breed("Labrador")
                 .gender("female")
                 .build();
-        dogFacade.createDog(dogDto);
+        dogFacade.createDog(privateDogDto);
 
-        dogDto = DogDto.builder()
+        privateDogDto = PrivateDogDto.builder()
                 .owner(owner)
                 .walkers(Collections.singletonList(walker1))
                 .name("Bef")
@@ -137,7 +137,7 @@ public class Populate {
                 .breed("Bulldog")
                 .gender("male")
                 .build();
-        dogFacade.createDog(dogDto);
+        dogFacade.createDog(privateDogDto);
         return true;
     }
 

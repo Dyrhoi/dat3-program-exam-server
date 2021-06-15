@@ -2,9 +2,9 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dtos.DogDto;
-import dtos.OwnerDto;
-import dtos.WalkerDto;
+import dtos.people._private.PrivateDogDto;
+import dtos.people._private.PrivateOwnerDto;
+import dtos.people._private.PrivateWalkerDto;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -23,6 +23,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -136,7 +137,7 @@ public class AdminResourceTest {
     @Test
     public void createOwner() {
         login("admin", "test");
-        OwnerDto ownerDto = OwnerDto.builder()
+        PrivateOwnerDto ownerDto = PrivateOwnerDto.builder()
                 .name("Ole Tuborg")
                 .addressId("0a3f50a0-37af-32b8-e044-0003ba298018")
                 .phone("+45 12345678")
@@ -167,39 +168,40 @@ public class AdminResourceTest {
                 .when()
                 .get("/admin/people/owners").then()
                 .statusCode(200)
-                .body("", hasSize(1));
+                .body("", hasSize(1))
+                .body("[0]", hasKey("addressId"));
     }
 
     @Test
     public void expectOwnerToHaveAtLeastOneDog() {
         login("admin", "test");
-        OwnerDto[] _temp = given()
+        PrivateOwnerDto[] _temp = given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
                 .get("/admin/people/owners").then()
-                .extract().as(OwnerDto[].class);
-        OwnerDto ownerDto = _temp[0];
+                .extract().as(PrivateOwnerDto[].class);
+        PrivateOwnerDto ownerDto = _temp[0];
         assertTrue(ownerDto.getDogs().size() > 0);
     }
 
     @Test
     public void expectWalkerToHaveMoreAtLeastOneDog() {
         login("admin", "test");
-        WalkerDto[] _temp = given()
+        PrivateWalkerDto[] _temp = given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
                 .get("/admin/people/walkers").then()
-                .extract().as(WalkerDto[].class);
-        WalkerDto walkerDto = _temp[0];
+                .extract().as(PrivateWalkerDto[].class);
+        PrivateWalkerDto walkerDto = _temp[0];
         assertTrue(walkerDto.getDogs().size() > 0);
     }
 
     @Test
     public void createWalker() {
         login("admin", "test");
-        WalkerDto walkerDto = WalkerDto.builder()
+        PrivateWalkerDto walkerDto = PrivateWalkerDto.builder()
                 .name("Ole Tuborg")
                 .addressId("0a3f50a0-37af-32b8-e044-0003ba298018")
                 .phone("+45 12345678")
@@ -239,15 +241,15 @@ public class AdminResourceTest {
 
         // A dog is required an already established Owner entity.
         // A dog can have walkers by default, but not required.
-        OwnerDto[] _temp = given()
+        PrivateOwnerDto[] _temp = given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
                 .get("/admin/people/owners").then()
-                .extract().as(OwnerDto[].class);
-        OwnerDto ownerDto = _temp[0];
+                .extract().as(PrivateOwnerDto[].class);
+        PrivateOwnerDto ownerDto = _temp[0];
 
-        DogDto dogDto = DogDto.builder()
+        PrivateDogDto privateDogDto = PrivateDogDto.builder()
                 .owner(ownerDto)
                 .name("Fjeffi")
                 .birthdate(1529057111)
@@ -259,7 +261,7 @@ public class AdminResourceTest {
         given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
-                .body(GSON.toJson(dogDto))
+                .body(GSON.toJson(privateDogDto))
                 //.when().post("/api/login")
                 .when().post("/admin/dogs");
 

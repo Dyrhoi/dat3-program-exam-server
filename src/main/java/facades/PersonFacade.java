@@ -1,8 +1,11 @@
 package facades;
 
-import dtos.OwnerDto;
-import dtos.PersonDto;
-import dtos.WalkerDto;
+import dtos.people._private.PrivateOwnerDto;
+import dtos.people._private.PrivatePersonDto;
+import dtos.people._private.PrivateWalkerDto;
+import dtos.people._public.PublicOwnerDto;
+import dtos.people._public.PublicPersonDto;
+import dtos.people._public.PublicWalkerDto;
 import entities.Dog;
 import entities.Owner;
 import entities.Walker;
@@ -34,7 +37,7 @@ public class PersonFacade {
         return instance;
     }
 
-    public PersonDto createOwner(OwnerDto ownerDto) {
+    public PrivatePersonDto createOwner(PrivateOwnerDto ownerDto) {
         EntityManager em = emf.createEntityManager();
         try {
             Owner owner = Owner.builder()
@@ -52,13 +55,13 @@ public class PersonFacade {
             em.persist(owner);
             em.getTransaction().commit();
 
-            return new OwnerDto(owner, DawaFacade.getDawaByAddressId(owner.getDawaAddressId()));
+            return new PrivateOwnerDto(owner, DawaFacade.getDawaByAddressId(owner.getDawaAddressId()));
         } finally {
             em.close();
         }
     }
 
-    public PersonDto createWalker(WalkerDto walkerDto) {
+    public PrivatePersonDto createWalker(PrivateWalkerDto walkerDto) {
         EntityManager em = emf.createEntityManager();
         try {
             Walker walker = Walker.builder()
@@ -76,30 +79,54 @@ public class PersonFacade {
             em.persist(walker);
             em.getTransaction().commit();
 
-            return new WalkerDto(walker, DawaFacade.getDawaByAddressId(walker.getDawaAddressId()));
+            return new PrivateWalkerDto(walker, DawaFacade.getDawaByAddressId(walker.getDawaAddressId()));
         } finally {
             em.close();
         }
     }
 
-    public List<PersonDto> getAllWalkersPrivate() {
+    public List<PrivatePersonDto> getAllWalkersPrivate() {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Walker> q = em.createQuery("SELECT w FROM Walker w", Walker.class);
             return q.getResultList().stream()
-                    .map(walker -> new WalkerDto(walker, DawaFacade.getDawaByAddressId(walker.getDawaAddressId())))
+                    .map(walker -> new PrivateWalkerDto(walker, DawaFacade.getDawaByAddressId(walker.getDawaAddressId())))
                     .collect(Collectors.toList());
         } finally {
             em.close();
         }
     }
 
-    public List<PersonDto> getAllOwnersPrivate() {
+    public List<PrivatePersonDto> getAllOwnersPrivate() {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Owner> q = em.createQuery("SELECT w FROM Owner w", Owner.class);
             return q.getResultList().stream()
-                    .map(owner -> new OwnerDto(owner, DawaFacade.getDawaByAddressId(owner.getDawaAddressId())))
+                    .map(owner -> new PrivateOwnerDto(owner, DawaFacade.getDawaByAddressId(owner.getDawaAddressId())))
+                    .collect(Collectors.toList());
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<PublicPersonDto> getAllOwnersPublic() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Owner> q = em.createQuery("SELECT w FROM Owner w", Owner.class);
+            return q.getResultList().stream()
+                    .map(PublicOwnerDto::new)
+                    .collect(Collectors.toList());
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<PublicPersonDto> getAllWalkersPublic() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Walker> q = em.createQuery("SELECT w FROM Walker w", Walker.class);
+            return q.getResultList().stream()
+                    .map(PublicWalkerDto::new)
                     .collect(Collectors.toList());
         } finally {
             em.close();

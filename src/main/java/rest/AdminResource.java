@@ -2,10 +2,10 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dtos.DogDto;
-import dtos.OwnerDto;
-import dtos.PersonDto;
-import dtos.WalkerDto;
+import dtos.people._private.PrivateDogDto;
+import dtos.people._private.PrivateOwnerDto;
+import dtos.people._private.PrivatePersonDto;
+import dtos.people._private.PrivateWalkerDto;
 import dtos.user.PrivateUserDto;
 import facades.DogFacade;
 import facades.PersonFacade;
@@ -45,42 +45,42 @@ public class AdminResource {
     @GET
     @Path("/people/owners")
     public Response getOwners() {
-        List<PersonDto> people = PERSON_FACADE.getAllOwnersPrivate();
+        List<PrivatePersonDto> people = PERSON_FACADE.getAllOwnersPrivate();
         return Response.ok().entity(GSON.toJson(people)).build();
     }
 
     @GET
     @Path("/people/walkers")
     public Response getWalkers() {
-        List<PersonDto> people = PERSON_FACADE.getAllWalkersPrivate();
+        List<PrivatePersonDto> people = PERSON_FACADE.getAllWalkersPrivate();
         return Response.ok().entity(GSON.toJson(people)).build();
     }
 
     @GET
     @Path("/dogs")
     public Response getDogs(String json) {
-        List<DogDto> dogs = DOG_FACADE.getAllDogs();
+        List<PrivateDogDto> dogs = DOG_FACADE.getAllDogs();
         return Response.ok().entity(GSON.toJson(dogs)).build();
     }
 
     @POST
     @Path("/people/owners")
     public Response createOwner(String json) {
-        PersonDto ownerDto = PERSON_FACADE.createOwner(GSON.fromJson(json, OwnerDto.class));
+        PrivatePersonDto ownerDto = PERSON_FACADE.createOwner(GSON.fromJson(json, PrivateOwnerDto.class));
         return Response.ok().entity(GSON.toJson(ownerDto)).build();
     }
 
     @POST
     @Path("/people/walkers")
     public Response createWalker(String json) {
-        PersonDto walkerDto = PERSON_FACADE.createWalker(GSON.fromJson(json, WalkerDto.class));
+        PrivatePersonDto walkerDto = PERSON_FACADE.createWalker(GSON.fromJson(json, PrivateWalkerDto.class));
         return Response.ok().entity(GSON.toJson(walkerDto)).build();
     }
 
     @POST
     @Path("/dogs")
     public Response createDog(String json) {
-        DogDto walkerDto = DOG_FACADE.createDog(GSON.fromJson(json, DogDto.class));
+        PrivateDogDto walkerDto = DOG_FACADE.createDog(GSON.fromJson(json, PrivateDogDto.class));
         return Response.ok().entity(GSON.toJson(walkerDto)).build();
     }
 
