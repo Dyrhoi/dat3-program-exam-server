@@ -150,6 +150,7 @@ public class PersonFacade {
                 Owner owner = (Owner) person;
                 owner.getDogs().stream().map(dog -> em.find(Dog.class, dog.getId())).collect(Collectors.toList()).forEach(dog -> {
                     dog.removeAllWalkers();
+                    em.merge(dog);
                     em.remove(dog);
                 });
             } else {
