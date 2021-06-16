@@ -331,6 +331,12 @@ public class AdminResourceTest {
                 .body("addressId", equalTo("0a3f50c0-0db4-32b8-e044-0003ba298018"))
                 .body("phone", equalTo("+45 39393939"))
                 .body("dogs", hasSize(1));
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when().get("/dogs")
+                .then()
+                .body("", hasSize(2));
 
     }
 

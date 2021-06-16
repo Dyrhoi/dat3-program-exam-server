@@ -176,8 +176,19 @@ public class PersonFacade {
                 }
 
                 person = owner;
-            }
-            if (person instanceof Walker) {
+
+                em.getTransaction().begin();
+                // Make the managed by entity manager and delete the dogs. ENSURE BIDRECTIONAL
+                // Also this is a fucking mess... Please don't let me touch JPA with a ten foot stick again...
+                // Spring boot please, or let me use graphql with typescript.
+                dogsToRemove.stream().map(dog -> em.find(Dog.class, dog.getId())).forEach(dog -> {
+                    dog.removeAllWalkers();
+                    em.remove(dog);
+                });
+                em.merge(person);
+                em.getTransaction().commit();
+
+            } else {
                 Walker walker = (Walker) person;
                 // We now expect the updated user to be a PrivateOwnerDto
                 PrivateWalkerDto pw = (PrivateWalkerDto) updatedPerson;
@@ -187,21 +198,17 @@ public class PersonFacade {
                     dogsToRemove.removeAll(newDogs);
 
                     walker.setDogs(newDogs);
+
+                    person = walker;
+
+                    em.getTransaction().begin();
+                    dogsToRemove.stream().map(dog -> em.find(Dog.class, dog.getId())).forEach(dog -> {
+                        dog.removeWalker(walker);
+                    });
+                    em.merge(person);
+                    em.getTransaction().commit();
                 }
-
-                person = walker;
             }
-
-            em.getTransaction().begin();
-            // Make the managed by entity manager and delete the dogs. ENSURE BIDRECTIONAL
-            // Also this is a fucking mess... Please don't let me touch JPA with a ten foot stick again...
-            // Spring boot please, or let me use graphql with typescript.
-            dogsToRemove.stream().map(dog -> em.find(Dog.class, dog.getId())).forEach(dog -> {
-                dog.removeAllWalkers();
-                em.remove(dog);
-            });
-            em.merge(person);
-            em.getTransaction().commit();
 
             if (person instanceof Owner) {
                 return new PrivateOwnerDto((Owner) _get(person.getId()), DawaFacade.getDawaByAddressId(person.getDawaAddressId()));
