@@ -192,7 +192,7 @@ public class PersonFacade {
                 Walker walker = (Walker) person;
                 // We now expect the updated user to be a PrivateOwnerDto
                 PrivateWalkerDto pw = (PrivateWalkerDto) updatedPerson;
-                if (pw.getDogs() != null && !pw.getDogs().isEmpty()) {
+                if (pw.getDogs() != null) {
                     List<Dog> newDogs = pw.getDogs().stream().map(dogDto -> em.find(Dog.class, dogDto.getId())).collect(Collectors.toList());
                     dogsToRemove = new ArrayList<>(walker.getDogs());
                     dogsToRemove.removeAll(newDogs);
