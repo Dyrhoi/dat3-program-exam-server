@@ -98,4 +98,11 @@ public class AdminResource {
         return Response.ok().entity(GSON.toJson(walkerDto)).build();
     }
 
+    @DELETE
+    @Path("/people/{id}")
+    public Response deletePerson(@PathParam("id") long id) {
+        PrivatePersonDto person = PERSON_FACADE.deletePerson(id);
+        return Response.ok().entity(GSON.toJson(person)).build();
+    }
+
 }

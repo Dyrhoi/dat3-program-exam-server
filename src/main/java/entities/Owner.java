@@ -1,8 +1,9 @@
 package entities;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.CascadeType;
@@ -14,7 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @SuperBuilder
 @Entity

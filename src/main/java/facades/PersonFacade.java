@@ -140,6 +140,33 @@ public class PersonFacade {
         return new PublicOwnerDto((Owner) _get(id));
     }
 
+    public PrivatePersonDto deletePerson(long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            // Manage person
+            Person person = em.find(Person.class, id);
+            em.getTransaction().begin();
+            if (person instanceof Owner) {
+                Owner owner = (Owner) person;
+                owner.getDogs().stream().map(dog -> em.find(Dog.class, dog.getId())).collect(Collectors.toList()).forEach(dog -> {
+                    dog.removeAllWalkers();
+                    em.remove(dog);
+                });
+            } else {
+                Walker walker = (Walker) person;
+                walker.getDogs().stream().map(dog -> em.find(Dog.class, dog.getId())).collect(Collectors.toList()).forEach(dog -> {
+                    dog.removeWalker(walker);
+                });
+            }
+            em.remove(person);
+            em.getTransaction().commit();
+
+            return new PrivatePersonDto(person);
+        } finally {
+            em.close();
+        }
+    }
+
     public PrivatePersonDto updatePerson(PrivatePersonDto updatedPerson) {
         // Only replace posted fields.
 

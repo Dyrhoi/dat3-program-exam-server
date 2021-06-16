@@ -398,4 +398,40 @@ public class AdminResourceTest {
 
     }
 
+    @Test
+    public void deleteOwner() {
+        login("admin", "test");
+        PrivateOwnerDto[] _tempOwner = given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/people/owners").then()
+                .extract().as(PrivateOwnerDto[].class);
+        PrivateOwnerDto oldOwner = _tempOwner[0];
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .delete("/admin/people/" + oldOwner.getId())
+                .then().statusCode(200);
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("dogs").then()
+                .statusCode(200)
+                .body("", hasSize(0));
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/admin/people/owners").then()
+                .statusCode(200)
+                .body("", hasSize(0));
+
+    }
+
 }
